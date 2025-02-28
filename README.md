@@ -9,36 +9,22 @@ This project implements an SMS spam classifier using the **Naïve Bayes algorith
 ├── 📄 README.md  
 ├── 📂 data  
 │   ├── spam.csv  
-├── 📂 src  
-│   ├── preprocessing.R  
-│   ├── train_model.R  
-│   ├── evaluate_model.R  
 ├── 📂 notebooks  
-│   ├── sms_classification.ipynb  
-├── 📂 reports  
-│   ├── results.md  
+│   ├── SPAM-Filter.ipynb  
 └── 📂 visualization  
-    ├── wordcloud.png  
+    ├── word cloud. Spam Vs Ham.png  
 ```
 
 ## 📊 Data Cleaning and Preprocessing
-1. **Import Data** 📥
-```r
-sms_raw <- read.csv("data/spam.csv", stringsAsFactors = FALSE)
-str(sms_raw)
-sms_raw$type <- factor(sms_raw$type)
-```
+1. **Import Data** 
+Kaggle link: https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset
 
-2. **Text Processing** 🔍
-```r
-sms_corpus <- Corpus(VectorSource(sms_raw$text))
-corpus_clean <- tm_map(sms_corpus, tolower)
-corpus_clean <- tm_map(corpus_clean, removeNumbers)
-corpus_clean <- tm_map(corpus_clean, removeWords, stopwords())
-corpus_clean <- tm_map(corpus_clean, removePunctuation)
-corpus_clean <- tm_map(corpus_clean, stripWhitespace)
-sms_dtm <- DocumentTermMatrix(corpus_clean)
-```
+2. **Text Processing** 
+- converting all the texts to lowercase
+- removing Numbers
+- removing stopwords
+- removing Punctuation
+- removing white spaces
 
 ## 🎨 Visualization
 - **Word Cloud** ☁️
@@ -47,25 +33,9 @@ install.packages("wordcloud")
 library(wordcloud)
 wordcloud(sms_corpus, min.freq = 40, random.order = FALSE)
 ```
-- **Spam vs Ham Word Clouds** 📊
-```r
-spam <- subset(sms_raw, type == "spam")
-ham <- subset(sms_raw, type == "ham")
-wordcloud(spam$text, max.words = 40, scale = c(3, 0.5))
-wordcloud(ham$text, max.words = 40, scale = c(3, 0.5))
-```
 
 ## 🤖 Model Training
-1. **Feature Engineering** 🛠️
-```r
-convert_counts <- function(x) {
- x <- ifelse(x > 0, 1, 0)
- x <- factor(x, levels = c(0, 1), labels = c("No", "Yes"))
- return(x)
-}
-sms_train <- apply(sms_dtm, MARGIN = 2, convert_counts)
-```
-2. **Naïve Bayes Classifier** ⚡
+**Naïve Bayes Classifier** 
 ```r
 install.packages("e1071")
 library(e1071)
@@ -73,17 +43,12 @@ sms_classifier <- naiveBayes(sms_train, sms_raw$type)
 ```
 
 ## 📈 Model Evaluation
-```r
-sms_test_pred <- predict(sms_classifier, sms_test)
-CrossTable(sms_test_pred, sms_raw$type, prop.chisq = FALSE, prop.t = FALSE, dnn = c('Predicted', 'Actual'))
-```
+Looking at the table, we can see that only **0.41 percent** were incorrectly classified as spam, while 14.44 percent were incorrectly classified as ham. 
+
+Considering the little effort we put in, this level of performance seems quite impressive. This case study exemplifies the reason why **naive Bayes is the standard for text classification**; directly out of the box, it performs surprisingly well
 
 ## 🚀 Optimizing Performance
-```r
-sms_classifier2 <- naiveBayes(sms_train, sms_raw$type, laplace = 0.1)
-sms_test_pred2 <- predict(sms_classifier2, sms_test)
-CrossTable(sms_test_pred2, sms_raw$type, prop.chisq = FALSE, prop.t = FALSE, prop.r = FALSE, dnn = c('Predicted', 'Actual'))
-```
+When training our model, we didn't set the Laplace parameter when running the naive Bayes(), thus, we will include it right now.
 🔹 **False positives reduced from 5 to 2!**
 🔹 **False negatives reduced from 26 to 20!**
 
