@@ -49,7 +49,9 @@ Considering the little effort we put in, this level of performance seems quite i
 
 ## 🚀 Optimizing Performance
 When training our model, we didn't set the Laplace parameter when running the naive Bayes(), thus, we will include it right now.
+
 🔹 **False positives reduced from 5 to 2!**
+
 🔹 **False negatives reduced from 26 to 20!**
 
 ## 🎯 Conclusion
