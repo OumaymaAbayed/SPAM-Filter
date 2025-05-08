@@ -1,6 +1,6 @@
 # 📩 SMS Spam Classifier
 
-🚀 **Overview**
+## Overview
 This project implements an SMS spam classifier using the **Naïve Bayes algorithm** in R. The model is trained on a dataset of spam and ham messages and optimized for accuracy.
 
 ## 📂 Project Structure
